@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Resources\SkiResource;
 use App\Models\Ski;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 class SkiController extends Controller
 {
@@ -20,7 +22,12 @@ class SkiController extends Controller
     {
         $skis = Ski::all();
 
-        return SkiResource::collection($skis);
+        $my_skis=array();
+        foreach($skis as $ski){
+            array_push($my_skis,new SkiResource($ski));
+        }
+
+        return $my_skis;
     }
 
     /**
@@ -33,6 +40,49 @@ class SkiController extends Controller
         //
     }
 
+    public function getByBrand($brand_id){
+        $skis=Ski::get()->where('brand_id',$brand_id);
+
+        if(count($skis)==0){
+            return response()->json('Ne postoji brend sa ovim ID-jem!');
+        }
+
+        $my_skis=array();
+        foreach($skis as $ski){
+            array_push($my_skis,new SkiResource($ski));
+        }
+
+        return $my_skis;
+    }
+
+    public function mySkis(Request $request){
+        $skis=Ski::get()->where('user_id',Auth::user()->id);
+        if(count($skis)==0){
+            return 'Nemate sacuvanih skija!';
+        }
+        $my_skis=array();
+        foreach($skis as $ski){
+            array_push($my_skis,new SkiResource($ski));
+        }
+
+        return $my_skis;
+    }
+
+    public function getByType($type_id){
+        $skis=Ski::get()->where('type_id',$type_id);
+
+        if(count($skis)==0){
+            return response()->json('ID ovog tipa ne postoji!');
+        }
+
+        $my_skis=array();
+        foreach($skis as $ski){
+            array_push($my_skis,new SkiResource($ski));
+        }
+
+        return $my_skis;
+    }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -41,8 +91,31 @@ class SkiController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validator=Validator::make($request->all(),[
+            'model'=>'required|String|max:255',
+            'color'=>'required|String|max:255',
+            'length'=>'required|Integer|max:190',
+            'brand_id'=>'required',
+            'type_id'=>'required'
+
+
+        ]);
+        if($validator->fails()){
+            return response()->json($validator->errors());
+        }
+        $ski=new Ski;
+        $ski->model=$request->model;
+        $ski->color=$request->color;
+        $ski->length=$request->length;
+        $ski->user_id=Auth::user()->id;
+        $ski->type_id=$request->type_id;
+        $ski->brand_id=$request->brand_id;
+
+        $ski->save();
+
+        return response()->json(['Skije su uspesno sacuvane!',new SkiResource($ski)]);
     }
+    
 
     /**
      * Display the specified resource.
@@ -75,7 +148,32 @@ class SkiController extends Controller
      */
     public function update(Request $request, Ski $ski)
     {
-        //
+        $validator=Validator::make($request->all(),[
+            'model'=>'required|String|max:255',
+            'color'=>'required|String|max:255',
+            'length'=>'required|Integer|max:190',
+            'brand_id'=>'required',
+            'type_id'=>'required'
+
+
+        ]);
+        if($validator->fails()){
+            return response()->json($validator->errors());
+        }
+
+        $ski->model=$request->model;
+        $ski->color=$request->color;
+        $ski->length=$request->length;
+        $ski->user_id=Auth::user()->id;
+        $ski->type_id=$request->type_id;
+        $ski->brand_id=$request->brand_id;
+
+        $result=$ski->update();
+
+        if($result==false){
+            return response()->json('Poteskoce pri azuriranju!');
+        }
+        return response()->json(['Skije su uspesno azirirane!',new SkiResource($ski)]);
     }
 
     /**
@@ -86,6 +184,8 @@ class SkiController extends Controller
      */
     public function destroy(Ski $ski)
     {
-        //
+        $ski->delete();
+
+        return response()->json('Skije '.$auto->model .' su uspesno obrisane!');
     }
 }
