@@ -23,6 +23,10 @@ class User extends Authenticatable
         'password',
     ];
 
+    public function skis(){
+        return $this->hasMany(Ski::class);
+    }
+
     /**
      * The attributes that should be hidden for serialization.
      *
