@@ -31,12 +31,12 @@ Route::post('/register',[AuthController::class,'register']);
 Route::post('/login',[AuthController::class,'login']);
 
 
- Route::get('skis/brand/{id}',[SkiController::class,'getByBrand']);
+Route::get('skis/brand/{id}',[SkiController::class,'getByBrand']);
 
- Route::get('skis/type/{id}',[SkiController::class,'getByType']);
+Route::get('skis/type/{id}',[SkiController::class,'getByType']);
 
 
- Route::group(['middleware' => ['auth:sanctum']], function () {
+Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/profile', function(Request $request) {
         return auth()->user();
     });
