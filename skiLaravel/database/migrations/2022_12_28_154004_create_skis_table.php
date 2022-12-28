@@ -15,6 +15,9 @@ return new class extends Migration
     {
         Schema::create('skis', function (Blueprint $table) {
             $table->id();
+            $table->string('model');
+            $table->string('color');
+            $table->int('length');
             $table->timestamps();
         });
     }
