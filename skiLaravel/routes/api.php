@@ -48,5 +48,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/logout',[AuthController::class,'logout']);
 
     Route::resource('skis',SkiController::class)->only('store','update','destroy'); 
+    Route::resource('types',TypeController::class)->only('store'); 
+    Route::resource('brands',BrandController::class)->only('store');
 
 });

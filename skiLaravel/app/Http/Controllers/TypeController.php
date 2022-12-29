@@ -6,6 +6,9 @@ use App\Http\Resources\TypeResource;
 use App\Models\Type;
 use Illuminate\Http\Request;
 
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
+
 class TypeController extends Controller
 {
     /**
@@ -38,7 +41,21 @@ class TypeController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validator=Validator::make($request->all(),[
+            'name'=>'required|String|max:255'
+
+
+        ]);
+        if($validator->fails()){
+            return response()->json($validator->errors());
+        }
+        $type=new Type;
+        $type->name=$request->name;
+        
+
+        $type->save();
+
+        return response()->json(['Tip je uspesno sacuvan!',new TypeResource($type)]);
     }
 
     /**
@@ -85,4 +102,6 @@ class TypeController extends Controller
     {
         //
     }
+
+    
 }
