@@ -6,6 +6,8 @@ use App\Http\Controllers\TypeController;
 use App\Http\Controllers\BrandController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\API\AuthController;    
+
 
 /*
 |--------------------------------------------------------------------------
