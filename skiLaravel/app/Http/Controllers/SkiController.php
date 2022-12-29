@@ -186,6 +186,6 @@ class SkiController extends Controller
     {
         $ski->delete();
 
-        return response()->json('Skije '.$auto->model .' su uspesno obrisane!');
+        return response()->json('Skije  su uspesno obrisane!');
     }
 }
